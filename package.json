@@ -7,7 +7,7 @@
   "types": "dist/index.d.ts",
   "files": ["dist", "assets"],
   "scripts": {
-    "build": "bun build src/index.ts --outdir dist --target node",
+    "build": "bun build src/index.ts --outdir dist --target node --external @napi-rs/canvas --external pngjs",
     "typecheck": "tsc --noEmit"
   },
   "keywords": ["gemini", "watermark", "synthid", "ai", "image"],
