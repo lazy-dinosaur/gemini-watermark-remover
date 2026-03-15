@@ -1,0 +1,24 @@
+{
+  "name": "gemini-watermark-remover",
+  "version": "1.0.0",
+  "description": "Remove Gemini SynthID watermark from AI-generated images using inverse alpha blending",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist", "assets"],
+  "scripts": {
+    "build": "bun build src/index.ts --outdir dist --target node",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": ["gemini", "watermark", "synthid", "ai", "image"],
+  "license": "MIT",
+  "dependencies": {
+    "@napi-rs/canvas": "^0.1.0",
+    "pngjs": "^7.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^22.0.0",
+    "@types/pngjs": "^3.4.0"
+  }
+}
