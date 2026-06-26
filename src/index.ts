@@ -36,6 +36,7 @@ function removeWatermarkPixels(
   imageWidth: number,
   alphaMap: Float32Array,
   position: { x: number; y: number; width: number; height: number },
+  alphaScale: number,
 ): void {
   const { x, y, width, height } = position;
 
@@ -44,7 +45,7 @@ function removeWatermarkPixels(
       const imgIdx = ((y + row) * imageWidth + (x + col)) * 4;
       const alphaIdx = row * width + col;
 
-      let alpha = alphaMap[alphaIdx];
+      let alpha = alphaMap[alphaIdx] * alphaScale;
       if (alpha < ALPHA_THRESHOLD) continue;
 
       alpha = Math.min(alpha, MAX_ALPHA);
@@ -62,10 +63,18 @@ function removeWatermarkPixels(
 export function detectConfig(
   width: number,
   height: number,
-): { logoSize: 48 | 96; marginRight: 32 | 64; marginBottom: 32 | 64 } {
+): {
+  logoSize: 48 | 96;
+  marginRight: number;
+  marginBottom: number;
+  alphaScale: number;
+} {
+  // Gemini 3.0 Flash (측정 2026-06): 1024x1024 출력. 워터마크 = 48px 스파클이
+  // 우하단에서 96px 마진 위치에 찍히며, 불투명도는 기존 템플릿의 약 46% 수준.
+  // >1024 경로는 레거시(현재 미사용)이며 검증 데이터가 없어 기존 값을 유지한다.
   return width > 1024 && height > 1024
-    ? { logoSize: 96, marginRight: 64, marginBottom: 64 }
-    : { logoSize: 48, marginRight: 32, marginBottom: 32 };
+    ? { logoSize: 96, marginRight: 64, marginBottom: 64, alphaScale: 1.0 }
+    : { logoSize: 48, marginRight: 96, marginBottom: 96, alphaScale: 0.46 };
 }
 
 function getAlphaMap(size: 48 | 96): Float32Array {
@@ -99,14 +108,14 @@ export async function removeGeminiWatermark(filePath: string): Promise<boolean> 
     };
 
     const alphaMap = getAlphaMap(config.logoSize);
-    removeWatermarkPixels(imageData.data, width, alphaMap, position);
+    removeWatermarkPixels(imageData.data, width, alphaMap, position, config.alphaScale);
     ctx.putImageData(imageData, 0, 0);
 
     const buffer = canvas.toBuffer("image/png");
     writeFileSync(filePath, buffer);
 
     console.log(
-      `[watermark] Removed Gemini watermark: ${filePath} (${width}x${height}, logo=${config.logoSize}px)`,
+      `[watermark] Removed Gemini watermark: ${filePath} (${width}x${height}, logo=${config.logoSize}px, margin=${config.marginRight}px, alphaScale=${config.alphaScale})`,
     );
     return true;
   } catch (error) {

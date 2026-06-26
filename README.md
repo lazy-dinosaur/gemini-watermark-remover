@@ -42,7 +42,9 @@ Removes the SynthID watermark from a PNG image file.
 
 ### `detectConfig(width: number, height: number)`
 
-Returns the watermark size and bottom-right margin used for the given image dimensions.
+Returns the watermark `logoSize`, bottom-right `marginRight`/`marginBottom`, and
+`alphaScale` (watermark opacity relative to the bundled alpha map) for the given
+image dimensions.
 
 ### `calculateAlphaMap(data, width, height)`
 
@@ -50,10 +52,15 @@ Builds a normalized alpha map from RGBA pixel data for advanced workflows.
 
 ### Image size detection
 
-| Image size | Logo size | Margin |
-|-----------|-----------|--------|
-| > 1024x1024 | 96px | 64px |
-| <= 1024x1024 | 48px | 32px |
+| Image size | Logo size | Margin | Alpha scale |
+|-----------|-----------|--------|-------------|
+| > 1024x1024 | 96px | 64px | 1.0 |
+| <= 1024x1024 | 48px | 96px | 0.46 |
+
+> The `<= 1024x1024` values were re-measured against Gemini 3.0 Flash output
+> (2026-06): the 48px sparkle moved to a 96px bottom-right margin and its
+> opacity dropped to ~46% of the original alpha map. The `> 1024x1024` path is
+> legacy and currently unverified against the newer spec.
 
 ## Requirements
 

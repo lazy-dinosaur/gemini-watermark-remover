@@ -17,13 +17,13 @@ function calculateAlphaMap(data, width, height) {
   }
   return alphaMap;
 }
-function removeWatermarkPixels(data, imageWidth, alphaMap, position) {
+function removeWatermarkPixels(data, imageWidth, alphaMap, position, alphaScale) {
   const { x, y, width, height } = position;
   for (let row = 0;row < height; row++) {
     for (let col = 0;col < width; col++) {
       const imgIdx = ((y + row) * imageWidth + (x + col)) * 4;
       const alphaIdx = row * width + col;
-      let alpha = alphaMap[alphaIdx];
+      let alpha = alphaMap[alphaIdx] * alphaScale;
       if (alpha < ALPHA_THRESHOLD)
         continue;
       alpha = Math.min(alpha, MAX_ALPHA);
@@ -37,7 +37,7 @@ function removeWatermarkPixels(data, imageWidth, alphaMap, position) {
   }
 }
 function detectConfig(width, height) {
-  return width > 1024 && height > 1024 ? { logoSize: 96, marginRight: 64, marginBottom: 64 } : { logoSize: 48, marginRight: 32, marginBottom: 32 };
+  return width > 1024 && height > 1024 ? { logoSize: 96, marginRight: 64, marginBottom: 64, alphaScale: 1 } : { logoSize: 48, marginRight: 96, marginBottom: 96, alphaScale: 0.46 };
 }
 function getAlphaMap(size) {
   const cached = alphaMapCache[size];
@@ -66,11 +66,11 @@ async function removeGeminiWatermark(filePath) {
       height: config.logoSize
     };
     const alphaMap = getAlphaMap(config.logoSize);
-    removeWatermarkPixels(imageData.data, width, alphaMap, position);
+    removeWatermarkPixels(imageData.data, width, alphaMap, position, config.alphaScale);
     ctx.putImageData(imageData, 0, 0);
     const buffer = canvas.toBuffer("image/png");
     writeFileSync(filePath, buffer);
-    console.log(`[watermark] Removed Gemini watermark: ${filePath} (${width}x${height}, logo=${config.logoSize}px)`);
+    console.log(`[watermark] Removed Gemini watermark: ${filePath} (${width}x${height}, logo=${config.logoSize}px, margin=${config.marginRight}px, alphaScale=${config.alphaScale})`);
     return true;
   } catch (error) {
     console.error("[watermark] Failed to remove Gemini watermark:", error);
