@@ -37,7 +37,7 @@ function removeWatermarkPixels(data, imageWidth, alphaMap, position, alphaScale)
   }
 }
 function detectConfig(width, height) {
-  return width > 1024 && height > 1024 ? { logoSize: 96, marginRight: 64, marginBottom: 64, alphaScale: 1 } : { logoSize: 48, marginRight: 96, marginBottom: 96, alphaScale: 0.46 };
+  return width > 1024 && height > 1024 ? { logoSize: 96, marginRight: 64, marginBottom: 64, alphaScale: 1 } : { logoSize: 48, marginRight: 96, marginBottom: 96, alphaScale: 0.6 };
 }
 function getAlphaMap(size) {
   const cached = alphaMapCache[size];

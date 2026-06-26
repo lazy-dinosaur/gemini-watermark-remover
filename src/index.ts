@@ -69,12 +69,14 @@ export function detectConfig(
   marginBottom: number;
   alphaScale: number;
 } {
-  // Gemini 3.0 Flash (측정 2026-06): 1024x1024 출력. 워터마크 = 48px 스파클이
-  // 우하단에서 96px 마진 위치에 찍히며, 불투명도는 기존 템플릿의 약 46% 수준.
+  // Gemini 3.0 Flash (측정 2026-06): 1024x1024 출력. 워터마크 = 48px 흰색 스파클이
+  // 우하단에서 96px 마진 위치에 찍히며, 불투명도는 기존 템플릿의 약 60% 수준.
+  // (제거 없는 raw 이미지 2장 교차검증: 나무/파랑 배경 모두 위치 (880,880),
+  //  색상 흰색 L=255, alphaScale 0.60에서 잔차 ~0.5.)
   // >1024 경로는 레거시(현재 미사용)이며 검증 데이터가 없어 기존 값을 유지한다.
   return width > 1024 && height > 1024
     ? { logoSize: 96, marginRight: 64, marginBottom: 64, alphaScale: 1.0 }
-    : { logoSize: 48, marginRight: 96, marginBottom: 96, alphaScale: 0.46 };
+    : { logoSize: 48, marginRight: 96, marginBottom: 96, alphaScale: 0.6 };
 }
 
 function getAlphaMap(size: 48 | 96): Float32Array {

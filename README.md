@@ -55,12 +55,13 @@ Builds a normalized alpha map from RGBA pixel data for advanced workflows.
 | Image size | Logo size | Margin | Alpha scale |
 |-----------|-----------|--------|-------------|
 | > 1024x1024 | 96px | 64px | 1.0 |
-| <= 1024x1024 | 48px | 96px | 0.46 |
+| <= 1024x1024 | 48px | 96px | 0.60 |
 
 > The `<= 1024x1024` values were re-measured against Gemini 3.0 Flash output
-> (2026-06): the 48px sparkle moved to a 96px bottom-right margin and its
-> opacity dropped to ~46% of the original alpha map. The `> 1024x1024` path is
-> legacy and currently unverified against the newer spec.
+> (2026-06) using removal-free raw captures on two different backgrounds: the
+> 48px white sparkle sits at a 96px bottom-right margin and composites at ~60%
+> of the bundled alpha map's strength. The `> 1024x1024` path is legacy and
+> currently unverified against the newer spec.
 
 ## Requirements
 
